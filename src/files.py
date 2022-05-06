@@ -4,8 +4,12 @@ from pathlib import Path
 import yaml
 from dacite import from_dict
 
+default_path = 'tests'
 
-def list_files(path='tests'):
+
+def list_files(path):
+    if path is None:
+        path = default_path
     cur_path = Path(__file__).parent.parent.joinpath(
         path).absolute()
     files_list = []

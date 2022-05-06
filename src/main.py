@@ -1,12 +1,5 @@
-import copy
-import subprocess as sp
 from argparse import ArgumentParser
-from dataclasses import dataclass, field
-from difflib import unified_diff
 from pathlib import Path
-
-import termcolor
-from alive_progress import alive_bar
 
 import files
 
@@ -30,12 +23,13 @@ def parse_arg():
 
 
 if __name__ == "__main__":
-    #args = parse_arg()
+    args = parse_arg()
     # TODO: print credits
 
+    path = args.p
     #category, binary, printf = args.c, args.b, args.p
     #timeout = default_timeout if args.t is None else args.t
-    files = files.list_files()
+    files = files.list_files(path)
     print(files)
 
     #print(f"Testing binary: {binary}")
