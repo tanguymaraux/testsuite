@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-import files
+import files as Files
 
 default_timeout = 1
 
@@ -16,6 +16,7 @@ def parse_arg():
                         help='timeout of execution (seconds)', type=int)
     parser.add_argument('-c', required=False, metavar='CATEGORY',
                         help='category to test', type=str)
+    # TODO: verbose mode
     parser.add_argument('-v', action='store_true',
                         help='activate verbose mode')
 
@@ -23,19 +24,17 @@ def parse_arg():
 
 
 if __name__ == "__main__":
-    args = parse_arg()
     # TODO: print credits
 
+    args = parse_arg()
     path = args.p
-    #category, binary, printf = args.c, args.b, args.p
-    #timeout = default_timeout if args.t is None else args.t
-    files = files.list_files(path)
-    print(files)
+    category, binary, printf = args.c, args.b, args.p
+    timeout = default_timeout if args.t is None else args.t
+    files = Files.list_files(path)
 
-    #print(f"Testing binary: {binary}")
+    print(f"Testing binary: {binary}")
 
-    #files = list_files()
-    #testsuite = add_file(files, category)
+    testsuite = Files.add_file(files, category)
 
     #print(f"Found {len(testsuite)} tests\n")
 

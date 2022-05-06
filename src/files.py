@@ -1,10 +1,28 @@
 import os
+from collections import defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 
 import yaml
 from dacite import from_dict
 
 default_path = 'tests'
+
+
+@dataclass
+class Testsuite:
+    category: str
+    tests: list = field(default_factory=None)
+
+
+@dataclass
+class TestCase:
+    name: str
+    input: str
+    #category: str = field(default=None)
+    state: Optional[bool] = field(default=None)
+    checks: list = field(default_factory=lambda: ["stdout", "exitcode"])
 
 
 def list_files(path):
@@ -22,26 +40,26 @@ def list_files(path):
 
 
 def add_file(files, category):
-    categories, testsuite = [], []
-    cur_path = os.path.dirname(os.path.abspath(__file__))
-    for fi in files:
-        with open(os.path.join(cur_path, fi)) as f:
-            for cat in yaml.load(f, Loader=yaml.SafeLoader):
-                categories.append(from_dict(data_class=Category, data=cat))
+    testsuite = {}
 
-    for cat in (cat for cat in categories if (category is None) or (category is not None and cat.category == category)):
-        for t in cat.tests:
+    for fi in files:
+        with open(fi) as f:
+            for cat in yaml.load(f, Loader=yaml.SafeLoader):
+                new = from_dict(data_class=Testsuite,
+                                data=cat)
+                testsuite[new.category] = []
+                testsuite[new.category] += new.tests
+
+    for cat, tests in testsuite.items():
+        if category is not None and cat.category != category:
+            continue
+
+        tests_list = []
+        for t in tests:
             test = from_dict(data_class=TestCase, data=t)
-            test.category = cat.category
-            if test.file == None:
-                dir_path = tests_path + "/" + test.directory
-                for f in os.listdir(dir_path):
-                    file_path = dir_path + "/" + f
-                    if os.path.isfile(file_path) and os.path.splitext(file_path)[1] == ".tig":
-                        test_copy = copy.deepcopy(test)
-                        test_copy.file = file_path
-                        testsuite.append(test_copy)
-            else:
-                test.file = tests_path + "/" + test.directory + "/" + test.file
-                testsuite.append(test)
+            #test.category = cat
+            tests_list.append(test)
+
+            testsuite[cat] = tests_list
+
     return testsuite
