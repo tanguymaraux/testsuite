@@ -1,5 +1,4 @@
 import os
-from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -11,7 +10,7 @@ default_path = 'tests'
 
 
 @dataclass
-class Testsuite:
+class Test:
     category: str
     tests: list = field(default_factory=None)
 
@@ -20,8 +19,9 @@ class Testsuite:
 class TestCase:
     name: str
     input: str
+    returncode: int = field(default=0)
     #category: str = field(default=None)
-    state: Optional[bool] = field(default=None)
+    todo: Optional[bool] = field(default=False)
     checks: list = field(default_factory=lambda: ["stdout", "exitcode"])
 
 
@@ -45,9 +45,10 @@ def add_file(files, category):
     for fi in files:
         with open(fi) as f:
             for cat in yaml.load(f, Loader=yaml.SafeLoader):
-                new = from_dict(data_class=Testsuite,
+                new = from_dict(data_class=Test,
                                 data=cat)
-                testsuite[new.category] = []
+                if new.category not in testsuite.keys():
+                    testsuite[new.category] = []
                 testsuite[new.category] += new.tests
 
     for cat, tests in testsuite.items():

@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import files as Files
+import testsuite as Ts
 
 default_timeout = 1
 
@@ -28,14 +29,15 @@ if __name__ == "__main__":
 
     args = parse_arg()
     path = args.p
-    category, binary, printf = args.c, args.b, args.p
+    category, binary, verbose = args.c, args.b, args.v
     timeout = default_timeout if args.t is None else args.t
     files = Files.list_files(path)
 
     print(f"Testing binary: {binary}")
 
-    testsuite = Files.add_file(files, category)
+    tests = Files.add_file(files, category)
+    testsuite = Ts.Testsuite()
 
-    #print(f"Found {len(testsuite)} tests\n")
-
-    #exit(print_tests(testsuite, printf))
+    count = sum(len(cat) for cat in tests.values())
+    print(f"Found {count} tests\n")
+    exit(testsuite.run_tests(tests, binary, timeout, count, verbose))
