@@ -17,7 +17,7 @@ def parse_arg():
                         help='timeout of execution (seconds)', type=int)
     parser.add_argument('-c', required=False, metavar='CATEGORY',
                         help='category to test', type=str)
-    # TODO: verbose mode
+    # TODO logger
     parser.add_argument('-v', action='store_true',
                         help='activate verbose mode')
 
@@ -25,7 +25,7 @@ def parse_arg():
 
 
 if __name__ == "__main__":
-    # TODO: print credits
+    print(f"General testsuite for any program.\nMIT License, Copyright (c) 2022 Tanguy Maraux,\ngithub.com/tanguymaraux/testsuite\n")
 
     args = parse_arg()
     path = args.p
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     files = Files.list_files(path)
 
     print(f"Testing binary: {binary}")
+    print(f"Tests directory: {path}")
 
     tests = Files.add_file(files, category)
     testsuite = Ts.Testsuite()

@@ -35,6 +35,7 @@ def list_files(path):
         for f in files:
             if f.endswith(".yaml") or f.endswith(".yml"):
                 files_list.append(os.path.join(root, f))
+                # TODO add logs
 
     return files_list
 
@@ -54,12 +55,12 @@ def add_file(files, category):
                 if new.category not in testsuite.keys():
                     testsuite[new.category] = []
                 testsuite[new.category] += new.tests
+                # TODO add logs
 
     for cat, tests in testsuite.items():
         tests_list = []
         for t in tests:
             test = from_dict(data_class=TestCase, data=t)
-            #test.category = cat
             tests_list.append(test)
 
             testsuite[cat] = tests_list
