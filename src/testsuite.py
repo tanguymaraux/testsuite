@@ -75,8 +75,8 @@ class Testsuite:
             self.nb_failed += 1
             print(f"{KO_line} [ {KO} ] {testcase.name} {KO_line}\n {e}")
         else:
+            self.nb_passed += 1
             if self.verbose:
-                self.nb_passed += 1
                 print(f"{OK_line} [ {OK} ] {testcase.name} {OK_line}")
 
     def run_tests(self, testsuite, binary, timeout, nb_tests, verbose):
@@ -87,7 +87,7 @@ class Testsuite:
                 if verbose:
                     print(f"\n{CAT_line} Category: {cat}")
                 for testcase in testsuite[cat]:
-                    if not testcase.todo:
+                    if testcase.todo is not None and not testcase.todo:
                         bin_proc = self.run(binary, timeout, testcase)
                         self.print_test(bin_proc, testcase)
                     else:
@@ -96,7 +96,7 @@ class Testsuite:
                     bar()  # update progress bar
 
         print(
-            f"\n{PASS_LINE} {SUMMARY} - Passed: [{nb_tests - self.nb_failed}/{nb_tests}] {PASS_LINE}")
+            f"\n{PASS_LINE} {SUMMARY} - Passed: [{self.nb_passed}/{nb_tests}] {PASS_LINE}")
         print(f"# {PASSED}: {self.nb_passed}")
         print(f"# {FAILED}: {self.nb_failed}")
         print(f"# {TIMEOUT}: {self.timeout}")

@@ -21,7 +21,7 @@ class TestCase:
     input: str
     returncode: int = field(default=0)
     #category: str = field(default=None)
-    todo: Optional[bool] = field(default=False)
+    todo: bool = field(default=False)
     checks: list = field(default_factory=lambda: ["stdout", "exitcode"])
 
 
@@ -47,14 +47,15 @@ def add_file(files, category):
             for cat in yaml.load(f, Loader=yaml.SafeLoader):
                 new = from_dict(data_class=Test,
                                 data=cat)
+
+                if category is not None and new.category != category:
+                    continue
+
                 if new.category not in testsuite.keys():
                     testsuite[new.category] = []
                 testsuite[new.category] += new.tests
 
     for cat, tests in testsuite.items():
-        if category is not None and cat.category != category:
-            continue
-
         tests_list = []
         for t in tests:
             test = from_dict(data_class=TestCase, data=t)
