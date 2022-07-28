@@ -20,6 +20,7 @@ class TestCase:
     name: str
     input: str
     returncode: int = field(default=0)
+    # TODO
     #category: str = field(default=None)
     todo: bool = field(default=False)
     checks: list = field(default_factory=lambda: ["stdout", "exitcode"])
@@ -35,7 +36,6 @@ def list_files(path):
         for f in files:
             if f.endswith(".yaml") or f.endswith(".yml"):
                 files_list.append(os.path.join(root, f))
-                # TODO add logs
 
     return files_list
 
@@ -55,7 +55,6 @@ def add_file(files, category):
                 if new.category not in testsuite.keys():
                     testsuite[new.category] = []
                 testsuite[new.category] += new.tests
-                # TODO add logs
 
     for cat, tests in testsuite.items():
         tests_list = []

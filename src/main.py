@@ -4,7 +4,7 @@ from pathlib import Path
 import files as Files
 import testsuite as Ts
 
-default_timeout = 1
+default_timeout = 2
 
 
 def parse_arg():
@@ -17,7 +17,6 @@ def parse_arg():
                         help='timeout of execution (seconds)', type=int)
     parser.add_argument('-c', required=False, metavar='CATEGORY',
                         help='category to test', type=str)
-    # TODO logger
     parser.add_argument('-v', action='store_true',
                         help='activate verbose mode')
 
@@ -25,7 +24,7 @@ def parse_arg():
 
 
 if __name__ == "__main__":
-    print(f"General testsuite for any program.\nMIT License, Copyright (c) 2022 Tanguy Maraux,\ngithub.com/tanguymaraux/testsuite\n")
+    print(f"General testsuite for your programs.\nMIT License, Copyright (c) 2022 Tanguy Maraux,\ngithub.com/tanguymaraux/testsuite\n")
 
     args = parse_arg()
     path = args.p
@@ -33,12 +32,11 @@ if __name__ == "__main__":
     timeout = default_timeout if args.t is None else args.t
     files = Files.list_files(path)
 
-    print(f"Testing binary: {binary}")
-    print(f"Tests directory: {path}")
+    print(f"Testing binary: \'{binary}\'")
+    print(f"Tests directory: \'{path}\'")
 
     tests = Files.add_file(files, category)
     testsuite = Ts.Testsuite()
 
     count = sum(len(cat) for cat in tests.values())
-    print(f"Found {count} tests\n")
     exit(testsuite.run_tests(tests, binary, timeout, count, verbose))

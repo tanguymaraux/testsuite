@@ -9,17 +9,18 @@ PASSED = termcolor.colored('Passed', 'green')
 SUMMARY = termcolor.colored('Summary', 'yellow')
 FAILED = termcolor.colored('Failed', 'red')
 TODO = termcolor.colored('Todo', 'cyan')
+TODO_line = termcolor.colored('============', 'cyan')
 TIMEOUT = termcolor.colored('Timeout', 'red')
-TESTS = termcolor.colored('tests', 'yellow')
-PASS_LINE = termcolor.colored('=================', 'yellow')
+PASS_LINE = termcolor.colored('============', 'yellow')
 OK = termcolor.colored('OK', 'green')
-OK_line = termcolor.colored('=================', 'green')
+OK_line = termcolor.colored('============', 'green')
 KO = termcolor.colored('KO', 'red')
-KO_line = termcolor.colored('=================', 'red')
+KO_line = termcolor.colored('============', 'red')
+KO_lineUp = termcolor.colored('^^^^^^^^^^^^', 'red')
+KO_lineDown = termcolor.colored('vvvvvvvvvvvv', 'red')
 TO = termcolor.colored('TIMED OUT', 'red')
 KORE = termcolor.colored('KO - RECOMPILE FAIL', 'red')
-CAT_line = termcolor.colored('=================', 'cyan')
-FL_line = termcolor.colored('=================', 'magenta')
+CAT_line = termcolor.colored('>>>', 'magenta')
 
 
 class Testsuite:
@@ -36,16 +37,16 @@ class Testsuite:
             return sp.run(exe, capture_output=True, text=True, timeout=timeout)
         except sp.TimeoutExpired:  # check time out
             self.timeout += 1
-            print(f"{KO_line} [ {TO} ] {testcase.name} {KO_line}")
+            print(f"{KO_line} [ {TO} ] {testcase.name}")
             return None
 
+    # TODO
     def check(self, actual: sp.CompletedProcess, testcase):
         failed = False
-        file_name = os.path.basename(actual.args[1])
 
         if actual.returncode != testcase.returncode:
             failed = True
-            print(f"{KO_line}{KO_line}{KO_line}")
+            print(f"{KO_lineDown}")
             print(
                 f"Expected returncode {testcase.returncode}, got {actual.returncode}")
             print(f"Stderr: {actual.stderr}")
@@ -73,14 +74,16 @@ class Testsuite:
         except AssertionError as e:
             self.failed = True
             self.nb_failed += 1
-            print(f"{KO_line} [ {KO} ] {testcase.name} {KO_line}\n {e}")
+            print(f"{KO_lineUp} [ {KO} ] {testcase.name}\n {e}")
         else:
             self.nb_passed += 1
             if self.verbose:
-                print(f"{OK_line} [ {OK} ] {testcase.name} {OK_line}")
+                print(f"{OK_line} [ {OK} ] {testcase.name}")
 
     def run_tests(self, testsuite, binary, timeout, nb_tests, verbose):
         self.failed, self.nb_failed, self.verbose, self.timeout, self.todo, self.nb_passed = False, 0, verbose, 0, 0, 0
+
+        print(f"\n{PASS_LINE} Running {nb_tests} tests {PASS_LINE}")
 
         with alive_bar(nb_tests) as bar:
             for cat in testsuite.keys():
@@ -89,8 +92,12 @@ class Testsuite:
                 for testcase in testsuite[cat]:
                     if testcase.todo is not None and not testcase.todo:
                         bin_proc = self.run(binary, timeout, testcase)
-                        self.print_test(bin_proc, testcase)
+                        if bin_proc is not None:
+                            self.print_test(bin_proc, testcase)
                     else:
+                        if verbose:
+                            print(
+                                f"{TODO_line} [ {TODO} ] {testcase.name}\n")
                         self.todo += 1
 
                     bar()  # update progress bar
@@ -104,4 +111,4 @@ class Testsuite:
         print(
             f"# Total: {self.nb_failed + self.timeout + self.todo + (self.nb_passed)}\n")
 
-        return self.failed
+        return self.failed + self.timeout
