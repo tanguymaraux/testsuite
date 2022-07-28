@@ -1,0 +1,8 @@
+---
+- category: errors
+  tests:
+    - name: man
+      returncode: 1
+      input: test
+    - name: sleepTO
+      input: -s

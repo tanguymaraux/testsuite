@@ -1,0 +1,16 @@
+---
+- category: flag_errors
+  tests:
+    - name: yo
+      input: man
+      returncode: 0
+    - name: not a flag
+      input: -t
+      returncode: 0
+
+- category: errors
+  tests:
+    - name: requires argument
+      input: -a
+      returncode: 0
+      has_stderr: true

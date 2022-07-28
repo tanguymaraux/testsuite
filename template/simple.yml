@@ -1,0 +1,16 @@
+---
+- category: simple
+  tests:
+    - name: hello
+      input: -a hello
+    - name: yo
+      input: -a yo
+      todo: true
+    - name: "42"
+      input: -p
+      returncode: 42
+    - name: sleep
+      input: -o
+    - name: hello
+      input: world
+      returncode: 0
