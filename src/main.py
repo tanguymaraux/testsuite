@@ -8,6 +8,11 @@ default_timeout = 2
 
 
 def parse_arg():
+    """Parse arguments
+
+    :return: arguments
+    :rtype: argparse.Namespace
+    """
     parser = ArgumentParser('Testsuite')
     parser.add_argument('-b', required=True,
                         help='path to the binary', type=Path, metavar='BINARY_PATH',)
@@ -38,5 +43,8 @@ if __name__ == "__main__":
     tests = Files.add_file(files, category)
     testsuite = Ts.Testsuite()
 
+    # number of tests
     count = sum(len(cat) for cat in tests.values())
+
+    # Run all tests
     exit(testsuite.run_tests(tests, binary, timeout, count, verbose))

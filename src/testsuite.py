@@ -24,24 +24,61 @@ CAT_line = termcolor.colored('>>>', 'magenta')
 
 
 class Testsuite:
+    # If you want to change the testsuite, this function may be useful
     def diff(self, expected: str, actual: str):
-        # TODO: add diff
+        """
+        Compares two string and returns a list of differences
+
+        :param expected: the expected string
+        :param actual: the actual string
+
+        :return: List of differences
+        :rtype: str
+        """
         expected_out = expected.splitlines(keepends=True)
         actual_out = actual.splitlines(keepends=True)
+
         return ''.join(unified_diff(expected_out, actual_out, fromfile='expected', tofile='actual'))
 
     def run(self, binary: str, timeout: int, testcase):
+        """
+        Runs a testcase and returns the result
+
+        :param binary: the binary to run
+        :type binary: str
+        :param timeout: the timeout for the test
+        :type timeout: int
+        :param testcase: the testcase to run
+        :type testcase: Testcase
+
+        :return: the result of the test
+        :rtype: sp.CompletedProcess
+        """
         try:
             exe = ["bash", binary]
             exe += testcase.input.split(" ")
+
             return sp.run(exe, capture_output=True, text=True, timeout=timeout)
         except sp.TimeoutExpired:  # check time out
             self.timeout += 1
             print(f"{KO_line} [ {TO} ] {testcase.name}")
+
             return None
 
-    # TODO
     def check(self, actual: sp.CompletedProcess, testcase):
+        """
+        Checks the result of a testcase
+
+        :param actual: the result of the test
+        :type actual: sp.CompletedProcess
+        :param testcase: the testcase to check
+        :type testcase: Testcase
+
+        :raises AssertionError: if the result of the test is not as expected
+
+        :return: True if the test passed, False otherwise
+        :rtype: bool
+        """
         failed = False
 
         if actual.returncode != testcase.returncode:
@@ -49,26 +86,25 @@ class Testsuite:
             print(f"{KO_lineDown}")
             print(
                 f"Expected returncode {testcase.returncode}, got {actual.returncode}")
-            print(f"Stderr: {actual.stderr}")
+            if actual.stderr:
+                print(f"Stderr: {actual.stderr}")
 
-    #    if "has_stderr" in checks and actual.stderr == "":
-            # print(f"{KO_line}{KO_line}{KO_line}")
-    #        failed = True
-    #        print("Something was expected on stderr")
-    #
-    #    if "stdout" in testcase.checks and testcase.stdout != actual.stdout:
-            # print(f"{KO_line}{KO_line}{KO_line}")
-    #        failed = True
-    #        print(f"Stdout differ\n{diff(testcase.stdout, actual.stdout)}")
-    #
-    #    if "stderr" in checks and expected.stderr != actual.stderr:
-            # print(f"{KO_line}{KO_line}{KO_line}")
-    #        failed = True
-    #        print(f"Stderr differ\n{diff(expected.stderr, actual.stderr)}")
+        if testcase.has_stderr and actual.stderr == "":
+            print(f"{KO_lineDown}")
+            failed = True
+            print("Something was expected on stderr")
 
         assert not failed
 
     def print_test(self, bin_proc, testcase):
+        """
+        Prints the result of a testcase
+
+        :param bin_proc: the result of the test
+        :type bin_proc: sp.CompletedProcess
+        :param testcase: the testcase to print
+        :type testcase: Testcase
+        """
         try:
             self.check(bin_proc, testcase)
         except AssertionError as e:
@@ -81,6 +117,23 @@ class Testsuite:
                 print(f"{OK_line} [ {OK} ] {testcase.name}")
 
     def run_tests(self, testsuite, binary, timeout, nb_tests, verbose):
+        """
+        Runs all tests in the testsuite and prints the result
+
+        :param testsuite: the list of tests to run
+        :type testsuite: dict
+        :param binary: the binary to run
+        :type binary: str
+        :param timeout: the timeout for the test
+        :type timeout: int
+        :param nb_tests: the number of tests to run
+        :type nb_tests: int
+        :param verbose: if true, prints the result of each test
+        :type verbose: bool
+
+        :return: the number of tests that failed
+        :rtype: int
+        """
         self.failed, self.nb_failed, self.verbose, self.timeout, self.todo, self.nb_passed = False, 0, verbose, 0, 0, 0
 
         print(f"\n{PASS_LINE} Running {nb_tests} tests {PASS_LINE}")
