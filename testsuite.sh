@@ -1,9 +1,9 @@
 #!/bin/sh
 
-BIN="src/bin"
-SRC="src/main.py"
+BIN="template/program.sh" # path to your program to test
+SRC="src/main.py" # path to the testsuite
 
-python3 -m venv env
-source "env/bin/activate"
-pip install -r "src/requirements.txt"
-python3 "$SRC" -b "$BIN" "$*" && deactivate
+pip install -r "src/requirements.txt" # install requirements
+
+# run testsuite
+python3 "$SRC" -b "$BIN" "$@" # insert testsuite argument (ie: '-p template')
