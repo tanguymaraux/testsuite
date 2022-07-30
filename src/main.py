@@ -29,7 +29,7 @@ def parse_arg():
 
 
 if __name__ == "__main__":
-    print(f"\nGeneral testsuite for your programs.\nMIT License, Copyright (c) 2022 Tanguy Maraux,\ngithub.com/tanguymaraux/testsuite\n")
+    print(f"General testsuite for your programs.\nMIT License, Copyright (c) 2022 Tanguy Maraux,\ngithub.com/tanguymaraux/testsuite\n")
 
     args = parse_arg()
     path = args.p
