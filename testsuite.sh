@@ -1,5 +1,3 @@
-#!/bin/sh
-
 BIN="template/program.sh" # path to your program to test
 SRC="src/main.py" # path to the testsuite
 
